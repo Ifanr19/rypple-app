@@ -2,12 +2,10 @@
 Final Project PPPL 
 
 # How to run the project locally 
-
-````markdown
-
 🟢 **STEP 1: Run the Laravel Backend**
 
-1.1 Open a terminal and go to your Laravel folder:  
+1.1 Open a terminal and go to your Laravel folder: 
+ 
 ```bash
 cd /Users/ifan/Documents/PPPL/rypple-app/backend
 ````
