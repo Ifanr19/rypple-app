@@ -282,68 +282,51 @@ export default function LandingPage() {
     }
   };
     // ── Watch Mode ───────────────────────────────────────
-    if (selectedVideo) {
-      return (
-        <div className="min-h-screen bg-gray-900 text-white flex">
-          {/* ── Sidebar (same as landing) ──────────────────── */}
-          <aside className="w-64 p-4 border-r border-gray-700 flex-shrink-0">
-            {/* ← Paste your entire landing‐page <aside>…</aside> here */}
-          </aside>
-  
-          <div className="flex-1 flex flex-col">
-            {/* ── Header (same as landing) ───────────────────── */}
-            <header className="relative flex items-center justify-between px-6 py-4 border-b border-gray-700">
-              {/* ← Paste your entire landing‐page <header>…</header> here */}
-            </header>
-  
-            {/* ── Main Video + Chat Layout ─────────────────────── */}
-            <main className="flex-1 flex">
-              {/* video panel */}
-              <div className="flex-1 p-4">
-                <button
-                  className="mb-4 text-gray-300 hover:text-white"
-                  onClick={() => setSelectedVideo(null)}
-                >
-                  ← Back
-                </button>
-                <video
-                  src={selectedVideo}
-                  controls
-                  autoPlay
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
-              </div>
-  
-              {/* chat panel */}
-              <div className="w-1/3 bg-gray-800 p-4 flex flex-col">
-                <div className="flex-1 overflow-y-auto space-y-2 mb-4">
-                  {chatMessages.map(m => (
-                    <div key={m.id} className="text-sm">
-                      <span className="font-semibold">{m.user}:</span> {m.text}
-                    </div>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  placeholder="Send a message"
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                      setChatMessages([
-                        ...chatMessages,
-                        { id: Date.now(), user: 'You', text: e.currentTarget.value }
-                      ]);
-                      e.currentTarget.value = '';
-                    }
-                  }}
-                />
-              </div>
-            </main>
-          </div>
+  if (selectedVideo) {
+    return (
+      <div className="flex min-h-screen bg-gray-900">
+        {/* video panel */}
+        <div className="flex-1 p-4">
+          <button
+            className="mb-4 text-gray-300 hover:text-white"
+            onClick={() => setSelectedVideo(null)}
+          >
+            ← Back
+          </button>
+          <video
+            src={selectedVideo}
+            controls
+            autoPlay
+            className="w-full h-auto rounded-lg shadow-lg"
+          />
         </div>
-      );
-    }
-  
+        {/* chat panel */}
+        <div className="w-1/3 bg-gray-800 p-4 flex flex-col">
+          <div className="flex-1 overflow-y-auto space-y-2 mb-4">
+            {chatMessages.map(m => (
+              <div key={m.id} className="text-sm">
+                <span className="font-semibold">{m.user}:</span> {m.text}
+              </div>
+            ))}
+          </div>
+          <input
+            type="text"
+            placeholder="Send a message"
+            className="w-full p-2 rounded bg-gray-700 text-white"
+            onKeyDown={e => {
+              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                setChatMessages([
+                  ...chatMessages,
+                  { id: Date.now(), user: 'You', text: e.currentTarget.value }
+                ]);
+                e.currentTarget.value = '';
+              }
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // ── JSX ────────────────────────────────────────────────
   return (
