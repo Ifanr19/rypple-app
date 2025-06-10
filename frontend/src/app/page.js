@@ -100,6 +100,36 @@ export default function LandingPage() {
     }
   };
 
+  useEffect(() => {
+    if (!selectedVideo) return;
+    const iv = setInterval(() => {
+      const users = [
+        'Alice', 'Bob', 'Carol', 'Dan', 'Eve', 'Frank', 'Grace', 'Hank',
+        'Ivy', 'Jack', 'Karen', 'Leo', 'Mia', 'Nina', 'Oscar', 'Pete',
+        'Quinn', 'Ray', 'Sara', 'Tom', 'Uma', 'Vince', 'Wendy', 'Xander',
+        'Yara', 'Zack'
+      ];
+      const lines = [
+        'Nice play!', 'Wow 😮', 'GG', '😂', 'What a shot!', 'Unbelievable!',
+        'Close call!', 'That was epic!', 'Amazing teamwork!', 'I did not expect that!',
+        'Clean move!', 'You got lucky 😅', 'Insane aim!', 'Clutch!! 🔥',
+        'Nice strategy!', 'This is intense!', 'Haha nice one!', 'Let’s gooo!',
+        'We got this 💪', 'No way!', 'Well played!', 'Oops 😬', 'Watch out!',
+        'Reloading...', 'Cover me!', 'Need backup!', 'Y’all saw that?',
+        'Big brain play 🧠', 'Lag?!', 'This is fun 😄', 'So close!', 'Too easy!',
+        'Try again 😂', 'You’re cracked!', 'Let’s win this!', 'Solid match!',
+        'Epic fail 😭', 'That was smart!', 'Respect 👏', 'Can’t stop watching!'
+      ];
+      const user = users[Math.floor(Math.random() * users.length)];
+      const text = lines[Math.floor(Math.random() * lines.length)];
+      setChatMessages(msgs => [
+        ...msgs.slice(-9),
+        { id: Date.now(), user, text }
+      ]);
+    }, 3000);
+    return () => clearInterval(iv);
+  }, [selectedVideo]);
+
   // ── Modal content by step ───────────────────────────────
   const renderModalContent = () => {
     switch (step) {
@@ -252,51 +282,68 @@ export default function LandingPage() {
     }
   };
     // ── Watch Mode ───────────────────────────────────────
-  if (selectedVideo) {
-    return (
-      <div className="flex min-h-screen bg-gray-900">
-        {/* video panel */}
-        <div className="flex-1 p-4">
-          <button
-            className="mb-4 text-gray-300 hover:text-white"
-            onClick={() => setSelectedVideo(null)}
-          >
-            ← Back
-          </button>
-          <video
-            src={selectedVideo}
-            controls
-            autoPlay
-            className="w-full h-auto rounded-lg shadow-lg"
-          />
-        </div>
-        {/* chat panel */}
-        <div className="w-1/3 bg-gray-800 p-4 flex flex-col">
-          <div className="flex-1 overflow-y-auto space-y-2 mb-4">
-            {chatMessages.map(m => (
-              <div key={m.id} className="text-sm">
-                <span className="font-semibold">{m.user}:</span> {m.text}
+    if (selectedVideo) {
+      return (
+        <div className="min-h-screen bg-gray-900 text-white flex">
+          {/* ── Sidebar (same as landing) ──────────────────── */}
+          <aside className="w-64 p-4 border-r border-gray-700 flex-shrink-0">
+            {/* ← Paste your entire landing‐page <aside>…</aside> here */}
+          </aside>
+  
+          <div className="flex-1 flex flex-col">
+            {/* ── Header (same as landing) ───────────────────── */}
+            <header className="relative flex items-center justify-between px-6 py-4 border-b border-gray-700">
+              {/* ← Paste your entire landing‐page <header>…</header> here */}
+            </header>
+  
+            {/* ── Main Video + Chat Layout ─────────────────────── */}
+            <main className="flex-1 flex">
+              {/* video panel */}
+              <div className="flex-1 p-4">
+                <button
+                  className="mb-4 text-gray-300 hover:text-white"
+                  onClick={() => setSelectedVideo(null)}
+                >
+                  ← Back
+                </button>
+                <video
+                  src={selectedVideo}
+                  controls
+                  autoPlay
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
               </div>
-            ))}
+  
+              {/* chat panel */}
+              <div className="w-1/3 bg-gray-800 p-4 flex flex-col">
+                <div className="flex-1 overflow-y-auto space-y-2 mb-4">
+                  {chatMessages.map(m => (
+                    <div key={m.id} className="text-sm">
+                      <span className="font-semibold">{m.user}:</span> {m.text}
+                    </div>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Send a message"
+                  className="w-full p-2 rounded bg-gray-700 text-white"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                      setChatMessages([
+                        ...chatMessages,
+                        { id: Date.now(), user: 'You', text: e.currentTarget.value }
+                      ]);
+                      e.currentTarget.value = '';
+                    }
+                  }}
+                />
+              </div>
+            </main>
           </div>
-          <input
-            type="text"
-            placeholder="Send a message"
-            className="w-full p-2 rounded bg-gray-700 text-white"
-            onKeyDown={e => {
-              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                setChatMessages([
-                  ...chatMessages,
-                  { id: Date.now(), user: 'You', text: e.currentTarget.value }
-                ]);
-                e.currentTarget.value = '';
-              }
-            }}
-          />
         </div>
-      </div>
-    );
-  }
+      );
+    }
+  
 
   // ── JSX ────────────────────────────────────────────────
   return (
@@ -466,7 +513,7 @@ export default function LandingPage() {
 
       {/* ── Modal Overlay ──────────────────────────────────── */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-20 flex items-center justify-center">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             {renderModalContent()}
           </div>
