@@ -396,7 +396,7 @@ export default function LandingPage() {
                   {!isLoggedIn ? (
                     <>
                       <span>Guest #2391</span>
-                      <Image src="/images/avatar.png" alt="Guest" width={32} height={32} className="rounded-full" />
+                      <Image src="/images/avatar/avatar.png" alt="Guest" width={32} height={32} className="rounded-full" />
                     </>
                   ) : (
                     <Image src="/images/avatar-loggedin.png" alt="You" width={32} height={32} className="rounded-full" />
