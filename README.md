@@ -1,7 +1,7 @@
 # rypple-app
 Final Project PPPL 
 
-# link to figma 
+# link to UI prototype
 https://www.figma.com/design/YHN6otnLEPbll2RDVqekCc/Rypple-GUI-Storyboard?node-id=0-1&p=f&t=pZe1KI3CfuSiW6fz-0
 
 # How to run the project locally 
