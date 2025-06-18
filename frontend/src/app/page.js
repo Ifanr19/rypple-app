@@ -74,7 +74,27 @@ export default function LandingPage() {
   const [code,          setCode]          = useState(['', '', '', '']);
   const [dob,           setDob]           = useState({ day: '', month: '', year: '' });
 
-  const openLogin  = () => { setStep('login');          setShowModal(true);  setShowDropdown(false); };
+  
+  const inputStyle = {
+    padding: '10px',
+    marginBottom: '10px',
+    width: '100%',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+    backgroundColor: '#1f2937',
+    color: 'white'
+  };
+  const buttonStyle = {
+    padding: '10px',
+    width: '100%',
+    backgroundColor: '#2563eb',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer'
+  };
+
+const openLogin  = () => { setStep('login');          setShowModal(true);  setShowDropdown(false); };
   const openSignup = () => { setStep('registerPhone');  setShowModal(true);  setShowDropdown(false); };
 
   const handleLoginNext = () => {
@@ -127,7 +147,57 @@ export default function LandingPage() {
         { id: Date.now(), user, text }
       ]);
     }, 3000);
-    return () => clearInterval(iv);
+    
+  const [name, setName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [user, setUser] = useState(null);
+  const [feedback, setFeedback] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data.user);
+        setIsLoggedIn(true);
+        setFeedback('Login successful!');
+        setShowModal(false);
+      } else {
+        setFeedback(data.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setFeedback('An error occurred during login');
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email: registerEmail, password: registerPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFeedback('Registration successful! Please log in.');
+        setStep('login');
+      } else {
+        setFeedback(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      setFeedback('An error occurred during registration');
+    }
+  };
+return () => clearInterval(iv);
   }, [selectedVideo]);
 
   // ── Modal content by step ───────────────────────────────
