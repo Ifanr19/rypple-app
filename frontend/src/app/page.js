@@ -21,6 +21,9 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [query, setQuery] = useState('');
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   const openModal = (type) => {
@@ -30,6 +33,12 @@ export default function HomePage() {
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const handleSearch = async () => {
+    const res = await fetch(`/api/search?query=${query}`);
+    const data = await res.json();
+    console.log('Search results:', data);
   };
 
   const handleSearch = async () => {
