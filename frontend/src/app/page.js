@@ -22,6 +22,9 @@ export default function HomePage() {
   const [currentUser, setCurrentUser] = useState(null);
   const [query, setQuery] = useState('');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -33,6 +36,12 @@ export default function HomePage() {
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const handleSearch = async () => {
+    const res = await fetch(`/api/search?query=${query}`);
+    const data = await res.json();
+    console.log('Search results:', data);
   };
 
   const handleSearch = async () => {
