@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function LoginForm({ onLogin, onSwitchToRegister }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
@@ -12,11 +12,12 @@ export default function LoginForm({ onLogin, onSwitchToRegister }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (res.ok) {
-      onLogin(username);
+      const data = await res.json();
+      onLogin(data.name || email);
     } else {
       alert('Login failed');
     }
@@ -25,10 +26,10 @@ export default function LoginForm({ onLogin, onSwitchToRegister }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
       <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         className="bg-gray-800 text-white px-4 py-2 rounded"
         required
       />
