@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 export default function RegisterForm({ onRegister, onSwitchToLogin }) {
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
@@ -12,11 +13,11 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ name, email, password }),
     });
 
     if (res.ok) {
-      onRegister(username);
+      onRegister(name);
     } else {
       alert('Registration failed');
     }
@@ -26,9 +27,17 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }) {
     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
       <input
         type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="bg-gray-800 text-white px-4 py-2 rounded"
+        required
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         className="bg-gray-800 text-white px-4 py-2 rounded"
         required
       />
