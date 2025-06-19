@@ -2,6 +2,7 @@ import { IncomingForm } from 'formidable';
 import path from 'path';
 import fs from 'fs';
 import db from '../../lib/db';
+import bcrypt from 'bcrypt';
 
 export const config = {
   api: {
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
 
     const name = fields.name[0];
     const email = fields.email[0];
-    const password = fields.password[0];
+    const rawPassword = fields.password[0];
 
     let avatarFilename = 'default.png';
     if (files.avatar && files.avatar[0]) {
@@ -43,10 +44,15 @@ export default async function handler(req, res) {
       }
     }
 
-    const sql = 'INSERT INTO users (name, email, password, avatar) VALUES (?, ?, ?, ?)';
-    db.query(sql, [name, email, password, avatarFilename], (err) => {
-      if (err) return res.status(500).json({ message: 'Database insert error' });
-      res.status(200).json({ message: 'User registered successfully' });
-    });
+    try {
+      const hashedPassword = await bcrypt.hash(rawPassword, 10);
+      const sql = 'INSERT INTO users (name, email, password, avatar) VALUES (?, ?, ?, ?)';
+      db.query(sql, [name, email, hashedPassword, avatarFilename], (err) => {
+        if (err) return res.status(500).json({ message: 'Database insert error' });
+        res.status(200).json({ message: 'User registered successfully' });
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Password encryption failed' });
+    }
   });
 }
