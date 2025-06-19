@@ -1,33 +1,38 @@
 import db from '../../lib/db';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 export default function handler(req, res) {
-  if (req.method === 'POST') {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { email, password } = req.body;
+  console.log('[LOGIN] Email:', email);
+  console.log('[LOGIN] Password:', password);
+
+  const sql = 'SELECT * FROM users WHERE email = ?';
+  db.query(sql, [email], async (err, results) => {
+    if (err) {
+      console.error('[LOGIN] DB Error:', err);
+      return res.status(500).json({ message: 'Database error' });
     }
 
-    const sql = 'SELECT * FROM users WHERE email = ?';
-    db.query(sql, [email], (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Login failed' });
-      }
-      if (results.length === 0) {
-        return res.status(401).json({ message: 'Email not found' });
-      }
+    if (results.length === 0) {
+      console.warn('[LOGIN] Email not found.');
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
-      const user = results[0];
-      const isMatch = bcrypt.compareSync(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Incorrect password' });
-      }
+    const user = results[0];
+    const isMatch = await bcrypt.compare(password, user.password);
 
-      // Return user info (excluding password)
-      res.status(200).json({ message: 'Login successful', user: { id: user.id, name: user.name, email: user.email } });
-    });
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
+    console.log('[LOGIN] Comparing password:', password, '→', isMatch);
+
+    if (!isMatch) {
+      console.warn('[LOGIN] Password mismatch.');
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    console.log('[LOGIN] Success:', user.email);
+    res.status(200).json({ name: user.name, email: user.email, avatar: user.avatar });
+  });
 }
