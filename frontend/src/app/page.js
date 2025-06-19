@@ -1,5 +1,3 @@
-// Final updated version of page.js with modern login/register UI and animation
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,6 +14,11 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [videos, setVideos] = useState([]);
+  const [filename, setFilename] = useState('');
+  const [url, setUrl] = useState('');
+  const [query, setQuery] = useState('');
+
   useEffect(() => {
     const user = localStorage.getItem('currentUser');
     if (user) {
@@ -23,6 +26,25 @@ export default function HomePage() {
       setIsLoggedIn(true);
     }
   }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const res = await axios.get('/api/videos');
+      setVideos(res.data);
+    } catch (err) {
+      console.error('Failed to fetch videos:', err);
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const res = await axios.get(`/api/search?query=${encodeURIComponent(query)}`);
+      setVideos(res.data);
+    } catch (err) {
+      console.error('Search failed:', err);
+    }
+  };
+
 
   const handleLogin = (username) => {
     setCurrentUser(username);
@@ -49,7 +71,24 @@ export default function HomePage() {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <header className="flex items-center justify-between px-6 py-4 bg-[#1f1f1f] shadow-md">
-          <h1 className="text-2xl font-bold text-purple-400">Rypple</h1>
+          <div className="flex items-center gap-6">
+            <h1 className="text-2xl font-bold text-purple-400">Rypple</h1>
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-600 focus:outline-none"
+              />
+              <button
+                onClick={handleSearch}
+                className="ml-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+              >
+                Go
+              </button>
+            </div>
+          </div>
           <div className="flex items-center space-x-4">
             {isLoggedIn ? (
               <>
@@ -77,6 +116,25 @@ export default function HomePage() {
         <main className="px-6 py-4 overflow-auto">
           <Featured />
           <Recommended />
+          <section className="mt-10">
+            <h2 className="text-xl font-bold mb-4">Uploaded Videos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((video) => (
+                <div key={video.id} className="bg-[#1f1f1f] p-4 rounded shadow">
+                  <h3 className="font-semibold mb-2">{video.filename}</h3>
+                  <iframe
+                    width="100%"
+                    height="200"
+                    src={video.url}
+                    title={video.filename}
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ))}
+            </div>
+          </section>
+
         </main>
       </div>
 
