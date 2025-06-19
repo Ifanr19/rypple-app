@@ -13,12 +13,9 @@ export default function HomePage() {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-<<<<<<< Updated upstream
-=======
   const [videos, setVideos] = useState([]);
   const [filename, setFilename] = useState('');
   const [url, setUrl] = useState('');
->>>>>>> Stashed changes
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -114,8 +111,6 @@ export default function HomePage() {
         <main className="px-6 py-4 overflow-auto">
           <Featured />
           <Recommended />
-<<<<<<< Updated upstream
-=======
           <section className="mt-10">
             <h2 className="text-xl font-bold mb-4">Uploaded Videos</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -134,7 +129,6 @@ export default function HomePage() {
               ))}
             </div>
           </section>
->>>>>>> Stashed changes
         </main>
       </div>
 
@@ -167,8 +161,6 @@ export default function HomePage() {
           </div>
         </Modal>
       )}
-<<<<<<< Updated upstream
-=======
 
       {isUploadModalOpen && (
         <Modal onClose={() => setIsUploadModalOpen(false)}>
@@ -197,7 +189,6 @@ export default function HomePage() {
           </div>
         </Modal>
       )}
->>>>>>> Stashed changes
     </div>
   );
 }
