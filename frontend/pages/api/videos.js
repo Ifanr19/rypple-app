@@ -2,7 +2,7 @@ import db from '../../lib/db';
 
 export default function handler(req, res) {
   if (req.method === 'GET') {
-    db.query('SELECT * FROM videos', (err, results) => {
+    db.query('SELECT * FROM videos ORDER BY id DESC', (err, results) => {
       if (err) {
         console.error('DB error:', err);
         return res.status(500).json({ message: 'Failed to fetch videos' });

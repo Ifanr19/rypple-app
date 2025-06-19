@@ -93,12 +93,23 @@ export default function HomePage() {
                 </button>
               </>
             ) : (
+
+              <div className="relative">
+                <img
+                  src="/avatars/default.png"
+                  alt="User Icon"
+                  className="w-8 h-8 cursor-pointer rounded-full border border-white"
+                  onClick={() => setIsLoginModalOpen(true)}
+                />
+              </div>
+
               <img
                 src="/images/avatars/default.png"
                 alt="User Icon"
                 className="w-8 h-8 cursor-pointer rounded-full border border-white"
                 onClick={() => setIsLoginModalOpen(true)}
               />
+
             )}
           </div>
         </header>

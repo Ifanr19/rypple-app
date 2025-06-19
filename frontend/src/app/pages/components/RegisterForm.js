@@ -4,16 +4,19 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [avatar, setAvatar] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const form = new FormData();
+    form.append('name', name);
+    form.append('email', email);
+    form.append('password', password);
+    if (avatar) form.append('avatar', avatar);
 
     const res = await fetch('/api/register', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
+      body: form,
     });
 
     if (res.ok) {
@@ -48,6 +51,12 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }) {
         onChange={(e) => setPassword(e.target.value)}
         className="bg-gray-800 text-white px-4 py-2 rounded"
         required
+      />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setAvatar(e.target.files[0])}
+        className="text-white"
       />
       <button
         type="submit"
