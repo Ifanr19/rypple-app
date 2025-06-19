@@ -1,5 +1,3 @@
-// Final updated version of page.js with modern login/register UI and animation
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,12 +7,17 @@ import Recommended from './pages/components/Recommended';
 import Modal from './pages/components/Modal';
 import LoginForm from './pages/components/LoginForm';
 import RegisterForm from './pages/components/RegisterForm';
+import axios from 'axios';
 
 export default function HomePage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [filename, setFilename] = useState('');
+  const [url, setUrl] = useState('');
 
   useEffect(() => {
     const user = localStorage.getItem('currentUser');
@@ -22,7 +25,17 @@ export default function HomePage() {
       setCurrentUser(user);
       setIsLoggedIn(true);
     }
+    fetchVideos();
   }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const res = await axios.get('/api/videos');
+      setVideos(res.data);
+    } catch (err) {
+      console.error('Failed to fetch videos:', err);
+    }
+  };
 
   const handleLogin = (username) => {
     setCurrentUser(username);
@@ -44,6 +57,18 @@ export default function HomePage() {
     localStorage.removeItem('currentUser');
   };
 
+  const handleUpload = async () => {
+    try {
+      await axios.post('/api/videos', { filename, url });
+      setFilename('');
+      setUrl('');
+      setIsUploadModalOpen(false);
+      fetchVideos();
+    } catch (err) {
+      alert('Upload failed');
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-[#121212] text-white font-sans">
       <Sidebar />
@@ -53,23 +78,27 @@ export default function HomePage() {
           <div className="flex items-center space-x-4">
             {isLoggedIn ? (
               <>
+                <button
+                  className="bg-green-600 px-4 py-1 rounded hover:bg-green-700 transition"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  Upload
+                </button>
                 <span className="text-sm">Hello, {currentUser}</span>
                 <button
-                  className="bg-red-600 px-4 py-1 rounded hover:bg-red-700 transition duration-200"
+                  className="bg-red-600 px-4 py-1 rounded hover:bg-red-700 transition"
                   onClick={handleLogout}
                 >
                   Logout
                 </button>
               </>
             ) : (
-              <div className="relative">
-                <img
-                  src="/images/avatars/default.png"
-                  alt="User Icon"
-                  className="w-8 h-8 cursor-pointer rounded-full border border-white"
-                  onClick={() => setIsLoginModalOpen(true)}
-                />
-              </div>
+              <img
+                src="/images/avatars/default.png"
+                alt="User Icon"
+                className="w-8 h-8 cursor-pointer rounded-full border border-white"
+                onClick={() => setIsLoginModalOpen(true)}
+              />
             )}
           </div>
         </header>
@@ -77,6 +106,25 @@ export default function HomePage() {
         <main className="px-6 py-4 overflow-auto">
           <Featured />
           <Recommended />
+
+          <section className="mt-10">
+            <h2 className="text-xl font-bold mb-4">Uploaded Videos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((video) => (
+                <div key={video.id} className="bg-[#1f1f1f] p-4 rounded shadow">
+                  <h3 className="font-semibold mb-2">{video.filename}</h3>
+                  <iframe
+                    width="100%"
+                    height="200"
+                    src={video.url}
+                    title={video.filename}
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ))}
+            </div>
+          </section>
         </main>
       </div>
 
@@ -108,6 +156,35 @@ export default function HomePage() {
                 setIsLoginModalOpen(true);
               }}
             />
+          </div>
+        </Modal>
+      )}
+
+      {/* Upload Modal */}
+      {isUploadModalOpen && (
+        <Modal onClose={() => setIsUploadModalOpen(false)}>
+          <div className="bg-[#1f1f1f] p-6 rounded-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Upload Video</h2>
+            <input
+              type="text"
+              placeholder="Filename"
+              value={filename}
+              onChange={(e) => setFilename(e.target.value)}
+              className="w-full mb-3 px-3 py-2 bg-[#2c2c2c] text-white rounded"
+            />
+            <input
+              type="text"
+              placeholder="YouTube URL (embed format)"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full mb-4 px-3 py-2 bg-[#2c2c2c] text-white rounded"
+            />
+            <button
+              className="w-full bg-purple-600 py-2 rounded hover:bg-purple-700 transition"
+              onClick={handleUpload}
+            >
+              Upload
+            </button>
           </div>
         </Modal>
       )}
