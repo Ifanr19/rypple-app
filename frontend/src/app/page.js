@@ -64,7 +64,7 @@ export default function HomePage() {
             ) : (
               <div className="relative">
                 <img
-                  src="/images/avatars/default.png"
+                  src="/avatars/default.png"
                   alt="User Icon"
                   className="w-8 h-8 cursor-pointer rounded-full border border-white"
                   onClick={() => setIsLoginModalOpen(true)}
