@@ -13,6 +13,12 @@ export default function HomePage() {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+<<<<<<< Updated upstream
+=======
+  const [videos, setVideos] = useState([]);
+  const [filename, setFilename] = useState('');
+  const [url, setUrl] = useState('');
+>>>>>>> Stashed changes
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -47,6 +53,15 @@ export default function HomePage() {
     const res = await fetch(`/api/search?query=${query}`);
     const data = await res.json();
     console.log('Search results:', data);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const res = await axios.get(`/api/search?query=${query}`);
+      setVideos(res.data);
+    } catch (err) {
+      console.error('Search failed:', err);
+    }
   };
 
   return (
@@ -99,10 +114,30 @@ export default function HomePage() {
         <main className="px-6 py-4 overflow-auto">
           <Featured />
           <Recommended />
+<<<<<<< Updated upstream
+=======
+          <section className="mt-10">
+            <h2 className="text-xl font-bold mb-4">Uploaded Videos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((video) => (
+                <div key={video.id} className="bg-[#1f1f1f] p-4 rounded shadow">
+                  <h3 className="font-semibold mb-2">{video.filename}</h3>
+                  <iframe
+                    width="100%"
+                    height="200"
+                    src={video.url}
+                    title={video.filename}
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ))}
+            </div>
+          </section>
+>>>>>>> Stashed changes
         </main>
       </div>
 
-      {/* Login Modal */}
       {isLoginModalOpen && (
         <Modal onClose={() => setIsLoginModalOpen(false)}>
           <div className="animate-fadeIn bg-[#1f1f1f] p-6 rounded-lg w-96">
@@ -118,7 +153,6 @@ export default function HomePage() {
         </Modal>
       )}
 
-      {/* Register Modal */}
       {isRegisterModalOpen && (
         <Modal onClose={() => setIsRegisterModalOpen(false)}>
           <div className="animate-fadeIn bg-[#1f1f1f] p-6 rounded-lg w-96">
@@ -133,6 +167,37 @@ export default function HomePage() {
           </div>
         </Modal>
       )}
+<<<<<<< Updated upstream
+=======
+
+      {isUploadModalOpen && (
+        <Modal onClose={() => setIsUploadModalOpen(false)}>
+          <div className="bg-[#1f1f1f] p-6 rounded-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Upload Video</h2>
+            <input
+              type="text"
+              placeholder="Filename"
+              value={filename}
+              onChange={(e) => setFilename(e.target.value)}
+              className="w-full mb-3 px-3 py-2 bg-[#2c2c2c] text-white rounded"
+            />
+            <input
+              type="text"
+              placeholder="YouTube URL (embed format)"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full mb-4 px-3 py-2 bg-[#2c2c2c] text-white rounded"
+            />
+            <button
+              className="w-full bg-purple-600 py-2 rounded hover:bg-purple-700 transition"
+              onClick={handleUpload}
+            >
+              Upload
+            </button>
+          </div>
+        </Modal>
+      )}
+>>>>>>> Stashed changes
     </div>
   );
 }
