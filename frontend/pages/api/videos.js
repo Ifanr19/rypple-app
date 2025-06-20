@@ -1,42 +1,7 @@
 import db from '../../lib/db';
-
-export default function handler(req, res) {
-  if (req.method === 'GET') {
-    db.query('SELECT * FROM videos ORDER BY id DESC', (err, results) => {
-      if (err) {
-        console.error('DB error:', err);
-        return res.status(500).json({ message: 'Failed to fetch videos' });
-      }
-      res.status(200).json(results);
-    });
-  } else if (req.method === 'POST') {
-    const { filename, url } = req.body;
-
-    if (!filename || !url) {
-      return res.status(400).json({ message: 'Missing fields' });
-    }
-
-    db.query(
-      'INSERT INTO videos (filename, url) VALUES (?, ?)',
-      [filename, url],
-      (err, result) => {
-        if (err) {
-          console.error('DB error:', err);
-          return res.status(500).json({ message: 'Failed to upload video' });
-        }
-        res.status(201).json({ message: 'Video uploaded successfully' });
-      }
-    );
-  } else {
-    res.setHeader('Allow', ['GET', 'POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-}
-
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
-import db from '../../lib/db';
 
 export const config = {
   api: {
@@ -51,27 +16,52 @@ export default async function handler(req, res) {
       if (err) return res.status(500).json({ message: 'Database error' });
       res.status(200).json(results);
     });
+
   } else if (req.method === 'POST') {
-    const form = new formidable.IncomingForm();
-    form.uploadDir = path.join(process.cwd(), 'public/uploads');
-    form.keepExtensions = true;
+    const form = new formidable.IncomingForm({
+      uploadDir: path.join(process.cwd(), 'public/uploads'),
+      keepExtensions: true,
+      multiples: false,
+    });
+
     form.parse(req, (err, fields, files) => {
       if (err) return res.status(500).json({ message: 'File upload error' });
 
-      const title = fields.title[0];
-      const description = fields.description[0];
-      const creator = fields.creator[0];
-      const file = files.video[0];
+      const title = fields.title?.[0] || '';
+      const description = fields.description?.[0] || '';
+      const category = fields.category?.[0] || '';
+      const gameTitle = fields.game_title?.[0] || '';
+      const creator = fields.creator?.[0] || 'Anonymous';
+      const file = files.video?.[0];
 
-      const newPath = path.join('uploads', path.basename(file.filepath));
+      if (!file) {
+        return res.status(400).json({ message: 'No video file uploaded' });
+      }
 
-      const sql = 'INSERT INTO videos (title, description, filename, creator) VALUES (?, ?, ?, ?)';
-      db.query(sql, [title, description, newPath, creator], (err) => {
+      const originalExt = path.extname(file.originalFilename || '');
+      const filename = `${creator}-${Date.now()}${originalExt}`;
+      const newPath = path.join(process.cwd(), 'public/uploads', filename);
+
+      try {
+        fs.renameSync(file.filepath, newPath);
+      } catch (e) {
+        return res.status(500).json({ message: 'Failed to save video file' });
+      }
+
+      const sql = `
+        INSERT INTO videos (title, description, category, game_title, creator, filename, uploaded_at)
+        VALUES (?, ?, ?, ?, ?, ?, NOW())
+      `;
+      const values = [title, description, category, gameTitle, creator, filename];
+
+      db.query(sql, values, (err) => {
         if (err) return res.status(500).json({ message: 'Database insert error' });
         res.status(200).json({ message: 'Video uploaded successfully' });
       });
     });
+
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
